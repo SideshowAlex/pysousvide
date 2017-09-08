@@ -1,0 +1,6 @@
+attrdict>=2.0.0
+docopt>=0.6.2
+dweepy>=0.3.0
+netifaces>=0.10.6
+requests>=2.18.4
+RPi.GPIO>=0.6.3
