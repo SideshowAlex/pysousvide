@@ -17,15 +17,13 @@ Options:
   -n NOTES --notes=NOTES     set notes about the run
   -r VALUE --ramp-up=VALUE   set the temperature tolerance for ramp up
 """
+import uuid
+
 from docopt import docopt
-import mongoengine
 
 import logger
 import controller_manager
 
-
-def db_connect():
-    mongoengine.connect('py-souvide-dev')
 
 def parse_command_line(version):
     arguments = docopt(__doc__, version=version)
@@ -55,8 +53,6 @@ def parse_command_line(version):
 def main():
     manager = controller_manager.Manager(is_daemon=False)
     params = parse_command_line(manager.version)
-
-    db_connect()
 
     with logger.observers() as loggers:
         manager.loggers = loggers

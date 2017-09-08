@@ -1,4 +1,9 @@
+import datetime
 import thread
+import time
+import uuid
+
+import attrdict
 
 import model
 import logger
@@ -46,13 +51,16 @@ class Manager(object):
         pid_constants = {
             k: run_param(params, k) for k in pid_const_names
         }
-        run = model.Run(
-            pid_constants=model.PidConstants(**pid_constants),
+        run = attrdict.AttrDict(
+            id=str(uuid.uuid4()),
+            pid_constants=attrdict.AttrDict(**pid_constants),
             notes=run_param(params, 'notes'),
             target=run_param(params, 'target'),
             ramp_up_target=run_param(params, 'ramp_up'),
+            start_time=datetime.datetime.now(),
+            end_time=None,
+            state=model.INITIALIZED,
         )
-        run.save()
         self._run = run
         self._controller = controller.Controller(self._run, self._loggers)
 
@@ -64,16 +72,8 @@ class Manager(object):
     def end_run(self):
         self._controller.is_active = False
 
-####
-import mongoengine
-import time
-
-def db_connect():
-    mongoengine.connect('py-souvide-dev')
 
 if __name__ == '__main__':
-    db_connect()
-
     with logger.observers() as loggers:
         manager = Manager()
         manager.loggers = loggers

@@ -1,5 +1,7 @@
-
 import datetime
+
+import attrdict
+
 import temperature_probe
 import relay
 import time
@@ -28,10 +30,8 @@ class Controller(object):
 
             if new_state != state:
                 self._run.state = new_state
-                self._run.save()
 
         self._run.state = model.COMPLETE
-        self._run.save()
         self.relay.powered = False
         self.logger.log_run_end(self._run)
 
@@ -56,19 +56,19 @@ class Controller(object):
             powered = power > x
             self.relay.powered = powered
 
-            measurement = model.Measurement(
+            measurement = attrdict.AttrDict(
+                timestamp=datetime.datetime.now(),
                 run=self._run,
                 state=self._run.state,
                 temperature=self.probe.temperature / 1000.0,
                 relay=self.relay.powered,
-                control_info=model.ControlLoopData(
+                control_info=attrdict.AttrDict(
                     loop_start=datetime.datetime.now(),
                     temperature=temperature_c,
                     power=power,
                     index=x,
                 )
             )
-            measurement.save()
             self.logger.log_control_loop(measurement)
             time.sleep(2)
         return model.CONTROL_LOOP
@@ -83,13 +83,13 @@ class Controller(object):
 
         self.relay.powered = True
 
-        measurement = model.Measurement(
+        measurement = attrdict.AttrDict(
             run=self._run,
+            timestamp=datetime.datetime.now(),
             state=self._run.state,
             temperature=temperature_c,
             relay=self.relay.powered,
         )
-        measurement.save()
         self.logger.log_ramp_up(measurement)
         time.sleep(15)
         return model.RAMP_UP

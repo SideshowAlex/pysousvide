@@ -73,4 +73,3 @@ class Logger(object):
             control_loop_temperature=measurement.control_info.temperature,
             control_loop_index=measurement.control_info.index,
         )
-
