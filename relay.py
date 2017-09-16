@@ -6,7 +6,7 @@ from RPi import GPIO
 RELAY_CONTROL = 'RELAY_CONTROL'
 
 DEFAULT_PINS = {
-    RELAY_CONTROL: 16,
+    RELAY_CONTROL: 5,
 }
 
 
